@@ -577,6 +577,11 @@ open class DownloadRequestMemory<RSerial: JSONSerializer, ESerial: JSONSerialize
         }
         return self
     }
+    
+    @discardableResult open func stream(closure: ((Data) -> Void)?) -> Self {
+        self.request.stream(closure: closure)
+        return self
+    }
 
     open func cancel() {
         self.request.cancel()
