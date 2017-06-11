@@ -589,10 +589,16 @@ open class DownloadRequestMemory<RSerial: JSONSerializer, ESerial: JSONSerialize
             } else {
                 let headerFields: [AnyHashable : Any] = response.response!.allHeaderFields
                 let result = caseInsensitiveLookup("Dropbox-Api-Result", dictionary: headerFields)!
-                let resultData = result.data(using: .utf8, allowLossyConversion: false)
-                let resultObject = self.responseSerializer.deserialize(SerializeUtil.parseJSON(resultData!))
-
-                completionHandler((resultObject, response.data!), nil)
+                
+                if let data = response.data {
+                    let resultData = result.data(using: .utf8, allowLossyConversion: false)
+                    let resultObject = self.responseSerializer.deserialize(SerializeUtil.parseJSON(resultData!))
+                    
+                    completionHandler((resultObject, data), nil)
+                } else {
+                    completionHandler(nil, nil)
+                    
+                }
             }
         }
         return self
