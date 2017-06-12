@@ -320,6 +320,17 @@ open class FilesRoutes {
         let serverArgs = Files.DownloadArg(path: path, rev: rev)
         return client.request(route, serverArgs: serverArgs)
     }
+    
+    // Same but takes a range arg to do a ranged download
+    @discardableResult open func download(path: String, rev: String? = nil, range: CountableRange<Int>) -> DownloadRequestMemory<Files.FileMetadataSerializer, Files.DownloadErrorSerializer> {
+        let route = Files.download
+        let serverArgs = Files.DownloadArg(path: path, rev: rev)
+        return client.request(route, serverArgs: serverArgs, headers: { (h) in
+            var rh = h
+            rh["Range"] = "bytes=\(range.lowerBound)-\(range.upperBound)"
+            return rh
+        })
+    }
 
     /// Download a folder from the user's Dropbox, as a zip file. The folder must be less than 1 GB in size and have
     /// fewer than 10,000 total files. The input cannot be a single file.
